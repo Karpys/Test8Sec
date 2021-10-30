@@ -2,17 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MathUtilities : MonoBehaviour
+namespace MathUtilities
 {
-    // Start is called before the first frame update
-    void Start()
+    public static class MathUtilities
     {
-        
+
+        public static bool HighestValue(float V1,float V2)
+        {
+            if (V1 > V2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

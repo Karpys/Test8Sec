@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static MathUtilities.MathUtilities;
 public class PlayerTouch : MonoBehaviour
 {
     public Controls Controller;
@@ -11,6 +12,18 @@ public class PlayerTouch : MonoBehaviour
     public GameObject Stick;
 
     public TOUCHSTATE TouchState = TOUCHSTATE.IDLE;
+
+    private Vector2 TouchPosition;
+    private Vector2 TouchStartPosition;
+    private Vector2 UpdateTouchPosition;
+    private float HighestActual;
+    private float LowestActual;
+    public float DeadZone = 10.0f;
+
+    public SHIPSTATE ShipState;
+
+    public GameObject UpdateGameObject;
+    public SpaceShipController SpaceShipController;
 
     private void Awake()
     {
@@ -40,11 +53,62 @@ public class PlayerTouch : MonoBehaviour
         }else if (TouchState == TOUCHSTATE.ENDED)
         {
             TouchState = TOUCHSTATE.IDLE;
+            SpaceShipController.ResetPositionLookAt();
+            SpaceShipController.ResetTimer();
         }
 
         if (TouchState == TOUCHSTATE.UPDATE)
         {
+            TouchPosition = Gameplay.TouchPosition.ReadValue<Vector2>();
+            TouchStartPosition = Gameplay.TouchStartPosition.ReadValue<Vector2>();
+
+            if (UpdateTouchPosition == Vector2.zero)
+            {
+                UpdateTouchPosition = TouchStartPosition;
+                ShipState = SHIPSTATE.UP;
+                SpaceShipController.SetPositionLookAt(true);
+                
+            }
+
+            /*SpaceShipController.SetPositionLookAt(true);*/
+            /*UpdateTouchPosition = TouchPosition;*/
             
+
+
+            if (ShipState == SHIPSTATE.UP)
+            {
+                if (TouchPosition.y >  HighestActual)
+                {
+                    HighestActual = TouchPosition.y;
+                }
+
+                if (TouchPosition.y + DeadZone < HighestActual )
+                {
+                    HighestActual = TouchPosition.y;
+                    LowestActual = TouchPosition.y;
+                    ShipState = SHIPSTATE.DOWN;
+                    SpaceShipController.SetPositionLookAt(false);
+                    SpaceShipController.ResetTimer();
+                }
+            }
+
+            if (ShipState == SHIPSTATE.DOWN)
+            {
+                if (TouchPosition.y < LowestActual)
+                {
+                    LowestActual = TouchPosition.y;
+                }
+
+                if (TouchPosition.y - DeadZone > LowestActual)
+                {
+                    LowestActual = TouchPosition.y;
+                    HighestActual = TouchPosition.y;
+                    ShipState = SHIPSTATE.UP;
+                    SpaceShipController.SetPositionLookAt(true);
+                    SpaceShipController.ResetTimer();
+                }
+            }
+
         }
     }
 
@@ -65,6 +129,13 @@ public class PlayerTouch : MonoBehaviour
         PRESSED,
         UPDATE,
         ENDED,
+        IDLE,
+    }
+
+    public enum SHIPSTATE
+    {
+        UP,
+        DOWN,
         IDLE,
     }
 }
