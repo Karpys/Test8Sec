@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Cinemachine;
 using UnityEngine;
 
 public class SpaceShipController : MonoBehaviour
 {
     // Start is called before the first frame update
-    public GameObject LookAtPoint;
-    [SerializeField] private float LookAtForce = 2.0f;
+    public GameObject LookAtPoint; 
+    public float LookAtForce = 2.0f;
+    public float ActualLookAt = 0f;
+    public float LookAtAcc;
 
     public GameObject Visual;
 
@@ -17,9 +20,17 @@ public class SpaceShipController : MonoBehaviour
     public List<ParticleSystem> ParticleToPlayOnChangeDirection;
 
     public SpaceShipAnimation Anim;
+    public SpaceShipSpeed SpeedAnim;
+
+    public Animator CameraAnimator;
 
     public float Speed;
     // Update is called once per frame
+    void Start()
+    {
+        CameraAnimator = GameObject.FindObjectOfType<CinemachineVirtualCamera>().gameObject.GetComponent<Animator>();
+    }
+
     void Update()
     {
         if (TimerRotation < RotationDuration)
@@ -63,21 +74,21 @@ public class SpaceShipController : MonoBehaviour
         Visual.transform.eulerAngles = new Vector3(eulerAng.x, Visual.transform.eulerAngles.y, Visual.transform.eulerAngles.z);
     }
 
-    public void SetPositionLookAt(bool Up)
+    public void SetPositionLookAt(PlayerTouch.SHIPSTATE State)
     {
-        PlayParticles(ParticleToPlayOnChangeDirection);
-        if (Anim.TimerBarrel > Anim.BarrelRollDuration)
+
+        if (State == PlayerTouch.SHIPSTATE.UP)
         {
-            Anim.LaunchBarrel();
-        }
-        if (Up)
-        {
-            LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x,LookAtForce,
+            ActualLookAt += LookAtAcc * Time.deltaTime;
+            ActualLookAt = Mathf.Clamp(ActualLookAt, -LookAtForce, LookAtForce);
+            LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x,ActualLookAt,
                 LookAtPoint.transform.localPosition.z);
         }
-        else
+        else if(State == PlayerTouch.SHIPSTATE.DOWN)
         {
-            LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x, -LookAtForce,
+            ActualLookAt -= LookAtAcc * Time.deltaTime;
+            ActualLookAt = Mathf.Clamp(ActualLookAt, -LookAtForce, LookAtForce);
+            LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x, ActualLookAt,
                 LookAtPoint.transform.localPosition.z);
         }
     }

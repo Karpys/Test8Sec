@@ -28,6 +28,10 @@ public class SpaceShipAnimation : MonoBehaviour
 
     public void LaunchBarrel()
     {
-        TimerBarrel = 0;
+        if (TimerBarrel > BarrelRollDuration)
+        {
+            TimerBarrel = 0;
+        }
+        
     }
 }

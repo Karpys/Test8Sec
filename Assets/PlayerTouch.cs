@@ -9,7 +9,6 @@ public class PlayerTouch : MonoBehaviour
 
     public Controls.GameplayActions Gameplay;
 
-    public GameObject Stick;
 
     public TOUCHSTATE TouchState = TOUCHSTATE.IDLE;
 
@@ -50,6 +49,7 @@ public class PlayerTouch : MonoBehaviour
         if (TouchState == TOUCHSTATE.PRESSED)
         {
             TouchState = TOUCHSTATE.UPDATE;
+            
         }else if (TouchState == TOUCHSTATE.ENDED)
         {
             TouchState = TOUCHSTATE.IDLE;
@@ -66,8 +66,7 @@ public class PlayerTouch : MonoBehaviour
             {
                 UpdateTouchPosition = TouchStartPosition;
                 ShipState = SHIPSTATE.UP;
-                SpaceShipController.SetPositionLookAt(true);
-                
+
             }
 
             /*SpaceShipController.SetPositionLookAt(true);*/
@@ -87,7 +86,6 @@ public class PlayerTouch : MonoBehaviour
                     HighestActual = TouchPosition.y;
                     LowestActual = TouchPosition.y;
                     ShipState = SHIPSTATE.DOWN;
-                    SpaceShipController.SetPositionLookAt(false);
                     SpaceShipController.ResetTimer();
                 }
             }
@@ -104,10 +102,11 @@ public class PlayerTouch : MonoBehaviour
                     LowestActual = TouchPosition.y;
                     HighestActual = TouchPosition.y;
                     ShipState = SHIPSTATE.UP;
-                    SpaceShipController.SetPositionLookAt(true);
                     SpaceShipController.ResetTimer();
                 }
             }
+
+            SpaceShipController.SetPositionLookAt(ShipState);
 
         }
     }
@@ -115,8 +114,8 @@ public class PlayerTouch : MonoBehaviour
     private void StartTouch(InputAction.CallbackContext context)
     {
         /*Debug.Log("Touch Started" + Controller.Gameplay.TouchPosition.ReadValue<Vector2>());*/
-        Stick.transform.position = Controller.Gameplay.TouchPosition.ReadValue<Vector2>();
         TouchState = TOUCHSTATE.PRESSED;
+        SpaceShipController.ActualLookAt = 0;
     }
 
     private void EndTouch(InputAction.CallbackContext context)
