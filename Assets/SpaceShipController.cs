@@ -24,6 +24,8 @@ public class SpaceShipController : MonoBehaviour
 
     public Animator CameraAnimator;
 
+    public AnimationCurve SpeedShip;
+
     public float Speed;
     // Update is called once per frame
     void Start()
@@ -74,23 +76,25 @@ public class SpaceShipController : MonoBehaviour
         Visual.transform.eulerAngles = new Vector3(eulerAng.x, Visual.transform.eulerAngles.y, Visual.transform.eulerAngles.z);
     }
 
-    public void SetPositionLookAt(PlayerTouch.SHIPSTATE State)
+    public void SetPositionLookAt(float ratio)
     {
 
-        if (State == PlayerTouch.SHIPSTATE.UP)
+        /*if (State == PlayerTouch.SHIPSTATE.UP)
         {
             ActualLookAt += LookAtAcc * Time.deltaTime;
-            ActualLookAt = Mathf.Clamp(ActualLookAt, -LookAtForce, LookAtForce);
-            LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x,ActualLookAt,
-                LookAtPoint.transform.localPosition.z);
+            
         }
-        else if(State == PlayerTouch.SHIPSTATE.DOWN)
+        else if (State == PlayerTouch.SHIPSTATE.DOWN)
         {
             ActualLookAt -= LookAtAcc * Time.deltaTime;
             ActualLookAt = Mathf.Clamp(ActualLookAt, -LookAtForce, LookAtForce);
             LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x, ActualLookAt,
                 LookAtPoint.transform.localPosition.z);
-        }
+        }*/
+        ActualLookAt = SpeedShip.Evaluate(ratio);
+        ActualLookAt = Mathf.Clamp(ActualLookAt, -LookAtForce, LookAtForce);
+        LookAtPoint.transform.localPosition = new Vector3(LookAtPoint.transform.localPosition.x, ActualLookAt,
+            LookAtPoint.transform.localPosition.z);
     }
 
     public void ResetPositionLookAt()

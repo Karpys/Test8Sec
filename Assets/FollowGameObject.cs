@@ -6,6 +6,7 @@ public class FollowGameObject : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject Follow;
+    public bool AllMovement;
     void Start()
     {
         
@@ -14,6 +15,13 @@ public class FollowGameObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(Follow.transform.position.x, transform.position.y, transform.position.z);
+        if (!AllMovement)
+        {
+            transform.position = new Vector3(Follow.transform.position.x, transform.position.y, transform.position.z);
+        }
+        else
+        {
+            transform.position = Follow.transform.position;
+        }
     }
 }

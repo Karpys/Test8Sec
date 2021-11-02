@@ -21,6 +21,7 @@ public class TowardsRessource : MonoBehaviour
         transform.position = NewPos;
         if (timer >= 1)
         {
+            Target.GetComponent<RessourceManager>().RessourceCount += 1;
             Destroy(gameObject);
         }
     }
